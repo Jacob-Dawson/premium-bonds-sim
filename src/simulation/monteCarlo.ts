@@ -6,7 +6,6 @@ import type {
     PercentileSnapshot
 } from './types'
 import { runSimulation } from './run'
-import { MAX_BALANCE } from './draw'
 
 const DETAILED_RUN_COUNT = 10
 

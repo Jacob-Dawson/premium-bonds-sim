@@ -1,1 +1,28 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+@theme {
+    --color-bg:      #0D1117;
+    --color-surface: #161D2B;
+    --color-border:  #1E2A3B;
+    --color-gold:    #F5C518;
+    --color-green:   #22C55E;
+    --color-red:     #EF4444;
+    --color-muted:   #94A3B8;
+    --color-text:    #E2E8F0;
+
+    --font-display: "DM Serif Display", serif;
+    --font-mono:    "IBM Plex Mono", monospace;
+    --font-sans:    "DM Sans", sans-serif;
+}
+
+body {
+    background-color: #0D1117;
+    color: #E2E8F0;
+    font-family: "DM Sans", sans-serif;
+}
+
+@layer components {
+    .input{
+        @apply w-full bg-transparent py-2.5 px-3 text-text font-mono text-sm focus:outline-none;
+    }
+}
