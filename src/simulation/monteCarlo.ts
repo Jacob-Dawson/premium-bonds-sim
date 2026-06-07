@@ -78,7 +78,10 @@ function computeEquivalentAnnualRate(
 
 // main export
 
-export function runMonteCarlo(config: SimulationConfig): AggregatedResults {
+export function runMonteCarlo(
+    config: SimulationConfig,
+    onProgress?: (percent: number) => void // add this
+): AggregatedResults {
 
     const allRuns: SimulationRun[] = [];
     const featuredRuns: DetailedSimulationRun[] = []
@@ -89,6 +92,12 @@ export function runMonteCarlo(config: SimulationConfig): AggregatedResults {
         const run = runSimulation(config, detailed)
         if(detailed) featuredRuns.push(run as DetailedSimulationRun)
             allRuns.push(run)
+
+        if(onProgress && i % 50 === 0){
+
+            onProgress(Math.round((i / config.numberOfRuns) * 100))
+
+        }
 
     }
 
