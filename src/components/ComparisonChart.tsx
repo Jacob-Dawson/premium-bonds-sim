@@ -1,18 +1,9 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine} from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
+import { fmtDiff, fmtGBPk } from '../utils/format'
 
 interface Props {
     results: AggregatedResults
-}
-
-function fmtDiff(value: number): string {
-
-    const abs = Math.abs(value)
-    const fmt = abs >= 1000
-        ? `£${(abs / 1000).toFixed(1)}k`
-        : `£${Math.round(abs)}`
-    return value >= 0 ? `+${fmt}` : `-${fmt}`
-
 }
 
 export default function ComparisonChart({ results }: Props) {
@@ -34,7 +25,7 @@ export default function ComparisonChart({ results }: Props) {
         .map(d => d.month)
 
     return (
-        <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
+        <div className="bg-surface border border-border rounded-xl p-6 space-y-4 h-full">
             <div>
                 <p className="font-mono text-xs text-muted uppercase tracking0-widest mb-1">
                     Premium Bonds vs Savings Account
@@ -106,7 +97,7 @@ function CompTooltip({ active, payload, label, comparisonRate}: {
         }}>
             <p style={{ color: '#94A3B8', marginBottom: 4}}>Year {year}</p>
             <p style={{ color: ahead ? '#F5C518' : '#EF4444'}}>
-                {ahead ? 'PB ahead by' : 'Savings ahead by'} {fmtDiff(Math.abs(diff))}
+                {ahead ? 'PB ahead by' : 'Savings ahead by'} {fmtGBPk(Math.abs(diff))}
             </p>
             <p style={{ color: '#94A3B8', marginTop: 4}}>
                 vs {(comparisonRate * 100).toFixed(1)}% savings rate

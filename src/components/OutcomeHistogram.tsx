@@ -38,7 +38,7 @@ export default function OutcomeHistogram({ results }: Props) {
     const comparisonFinal = results.comparisonBalanceByMonth[lastMonth]
 
     return (
-        <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
+        <div className="bg-surface border border-border rounded-xl p-6 space-y-4 h-full">
             <div>
                 <p className="font-mono text-xs text-muted uppercase tracking-widest mb-1">
                     Distribution of Final Balance

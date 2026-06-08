@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell} from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
+import { fmtGBP } from '../utils/format'
 
 interface Props {
     results: AggregatedResults
@@ -66,9 +67,9 @@ export default function PrizeTimeline({ results }: Props){
             {/* Summary stats for this run */}
             <div className="grid grid-cols-3 gap-3">
                 {[
-                    { label: 'Total Won',   value: '£' + totalWon.toLocaleString('en-GB')},
+                    { label: 'Total Won',   value: fmtGBP(totalWon)},
                     { label: 'Prize Count', value: String(winCount)},
-                    { label: 'Biggest Win', value: biggestWin > 0 ? '£' + biggestWin.toLocaleString('en-GB') : '-'}
+                    { label: 'Biggest Win', value: biggestWin > 0 ? fmtGBP(biggestWin) : '-'}
                 ].map(({ label, value }) => (
                     <div key={label} className="bg-bg border  border-border rounded-lg px-4 py-3">
                         <p className="font-mono text-xs text-muted mb-1">{label}</p>
@@ -143,12 +144,12 @@ function TimelineTooltip({ active, payload, label }: {
                 .sort(([a], [b]) => Number(b) - Number(a))
                 .map(([amount, count]) =>
                     <p key={amount} style={{color: '#F5C518'}}>
-                        £{Number(amount).toLocaleString('en-GB')}
+                        {fmtGBP(Number(amount))}
                         {count > 1 ? ` x ${count}` : ''}
                     </p>
             )}
             <p style={{ color: '#94A3B8', marginTop: 4, borderTop: '1px solid #1E2A3B', paddingTop: 4}}>
-                Total: £{total.toLocaleString('en-GB')}
+                Total: {fmtGBP(total)}
             </p>
         </div>
     )

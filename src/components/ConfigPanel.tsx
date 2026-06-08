@@ -50,7 +50,7 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
     }
 
     return (
-        <div className="bg-surface border border-border rounded-xl p-6 space-y-6">
+        <div className="bg-surface border border-border rounded-xl p-6 space-y-5">
 
             {/* Your Investment */}
             <section className="space-y-4">

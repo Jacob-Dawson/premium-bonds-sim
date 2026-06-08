@@ -1,14 +1,9 @@
 import type { AggregatedResults } from "../simulation/types";
+import { fmtGBP, fmtPct } from "../utils/format";
 
 interface Props {
     results: AggregatedResults
 }
-
-const fmt = (n: number) => 
-    '£' + Math.round(n).toLocaleString('en-GB')
-
-const pct = (n: number) =>
-    (n * 100).toFixed(2) + '%'
 
 export default function StatsSummary({results}: Props) {
     const lastMonth = results.config.durationMonths - 1
@@ -25,27 +20,27 @@ export default function StatsSummary({results}: Props) {
     const stats = [
         {
             label: 'Median Final Balance',
-            value: fmt(p50),
-            sub: `p10 ${fmt(p10)} - p90 ${fmt(p90)}`,
+            value: fmtGBP(p50),
+            sub: `p10 ${fmtGBP(p10)} - p90 ${fmtGBP(p90)}`,
             accent: 'text-gold'
         },
         {
             label: 'Median Prizes Won',
-            value: fmt(medianPrizes),
+            value: fmtGBP(medianPrizes),
             sub: `over ${results.config.durationMonths / 12} years`,
             accent: 'text-green'
         },
         {
             label: 'Equivalent Annual Rate',
-            value: pct(results.medianEquivalentRate),
-            sub: `vs ${pct(results.config.comparisonInterestRate)} savings rate`,
+            value: fmtPct(results.medianEquivalentRate),
+            sub: `vs ${fmtPct(results.config.comparisonInterestRate)} savings rate`,
             accent: results.medianEquivalentRate >= results.config.comparisonInterestRate
                 ? 'text-green'
                 : 'text-red'
         },
         {
             label: 'Beat Savings Account',
-            value: pct(beatSavings),
+            value: fmtPct(beatSavings),
             sub: 'of simulated runs',
             acccent: beatSavings >= 0.5 ? 'text-green' : 'text-red'
         }

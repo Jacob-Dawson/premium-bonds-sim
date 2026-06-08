@@ -11,16 +11,27 @@ interface Props {
 
 export default function ResultsDashboard({ results }: Props) {
 
+    const { numberOfRuns, durationMonths } = results.config;
+
     return (
         <div className="space-y-6">
             <p className="font-mono text-xs text-muted uppercase tracking-widest">
-                Results - {results.config.numberOfRuns.toLocaleString()} simulations over {results.config.durationMonths / 12} years
+                Results - {numberOfRuns.toLocaleString()} simulations over {durationMonths / 12} years
             </p>
+
+            {/* Headline stats */}
             <StatsSummary results={results} />
-            {/* Charts go here */}
+
+            {/* Main balance chart - full width */}
             <BalanceChart results={results} />
-            <OutcomeHistogram results={results} />
-            <ComparisonChart results={results} />
+
+            {/* Two-column row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <OutcomeHistogram results={results} />
+                <ComparisonChart results={results} />
+            </div>
+
+            {/* Prize timeline - full width */}
             <PrizeTimeline results={results} />
         </div>
     )

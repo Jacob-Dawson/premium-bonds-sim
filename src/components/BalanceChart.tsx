@@ -9,16 +9,10 @@ import {
     ResponsiveContainer
 } from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
+import { fmtGBPk, fmtGBP } from '../utils/format'
 
 interface Props {
     results: AggregatedResults
-}
-
-function fmtY(value: number): string {
-    
-    if(value >= 1000) return `£${(value / 1000).toFixed(0)}k`
-    return `£${value}`
-
 }
 
 export default function BalanceChart({ results }: Props){
@@ -58,7 +52,7 @@ export default function BalanceChart({ results }: Props){
                         tickLine={false}
                     />
                     <YAxis
-                        tickFormatter={fmtY}
+                        tickFormatter={fmtGBPk}
                         tick={{ fill: '#94A3B8', fontFamily: 'IBM Plex Mono', fontSize: 11}}
                         axisLine={false}
                         tickLine={false}
@@ -91,7 +85,7 @@ function ChartTooltip({ active, payload, label, comparisonRate}: {
     if(!active || !payload?.length || label == null) return null
 
     const get = (key: string) => payload.find(p => p.dataKey === key)?.value ?? 0
-    const fmt = (n: number) => '£' + Math.round(n).toLocaleString('en-GB')
+    const fmt = (n: number) => fmtGBP(n)
 
     const p10 = get('bandBottom')
     const p90 = p10 + get('bandHeight')
