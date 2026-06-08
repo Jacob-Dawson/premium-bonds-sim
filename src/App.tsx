@@ -1,6 +1,7 @@
 import { useSimulation } from "./hooks/useSimulation"
 import type { SimulationConfig } from "./simulation/types"
 import ConfigPanel from './components/ConfigPanel.tsx'
+import ResultsDashboard from "./components/ResultsDashboard.tsx"
 
 const DEFAULT_CONFIG: SimulationConfig = {
   initialDeposit: 1000,
@@ -53,11 +54,9 @@ export default function App(){
           </div>
         )}
 
-        {/* Results placeholder */}
+        {/* Results */}
         {status === 'complete' && results && (
-          <p className="font-mono text-green text-sm">
-            Simulation complete - results coming soon
-          </p>
+          <ResultsDashboard results={results} />
         )}
 
         {status === 'error' && (
