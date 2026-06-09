@@ -27,7 +27,7 @@ export default function ComparisonChart({ results }: Props) {
     return (
         <div className="bg-surface border border-border rounded-xl p-6 space-y-4 h-full">
             <div>
-                <p className="font-mono text-xs text-muted uppercase tracking0-widest mb-1">
+                <p className="font-mono text-xs text-muted uppercase tracking-widest mb-1">
                     Premium Bonds vs Savings Account
                 </p>
                 <p className="font-mono text-xs text-muted">

@@ -9,8 +9,8 @@ interface Props {
 
 function tierColor(total: number): string {
 
-    if(total >= 1000) return '#FFFFFF'  // higher band
-    if(total >= 100) return '#F5C518'   // medium band
+    if(total >= 5_000) return '#FFFFFF'  // higher band
+    if(total >= 500) return '#F5C518'   // medium band
     return '#A38A0A'                    // lower band
 
 }

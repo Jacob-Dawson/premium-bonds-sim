@@ -160,7 +160,7 @@ export default function RealPrizeTimeline({ prizes, onAdd, onRemove, results }: 
                             .sort((a, b) => a.month - b.month)
                             .map(p => (
                                 <div key={p.id}
-                                    className="flex items-center justify-between py-1.5 px-3 bg-bg border-border rounded-lg">
+                                    className="flex items-center justify-between py-1.5 px-3 bg-bg border border-border rounded-lg">
                                     <span className="font-mono text-xs text-muted">Month {p.month}</span>
                                     <span className="font-mono text-xs text-gold">{fmtGBP(p.amount)}</span>
                                     <button

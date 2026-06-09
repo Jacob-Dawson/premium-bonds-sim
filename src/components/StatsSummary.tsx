@@ -42,7 +42,7 @@ export default function StatsSummary({results}: Props) {
             label: 'Beat Savings Account',
             value: fmtPct(beatSavings),
             sub: 'of simulated runs',
-            acccent: beatSavings >= 0.5 ? 'text-green' : 'text-red'
+            accent: beatSavings >= 0.5 ? 'text-green' : 'text-red'
         }
     ]
 

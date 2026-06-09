@@ -10,7 +10,7 @@ const PRIZE_TIERS: PrizeTier[] = [
     { value: 1_000,     weight: 17_655 },
     { value: 500,       weight: 52_965 },
     { value: 100,       weight: 1_965_639 },
-    { value: 50,        weight: 1_695_639 },
+    { value: 50,        weight: 1_965_639 },
     { value: 25,        weight: 2_330_759 }
 ];
 
