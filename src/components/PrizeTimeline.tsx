@@ -9,9 +9,9 @@ interface Props {
 
 function tierColor(total: number): string {
 
-    if(total >= 1000) return '#FFFFFF'
-    if(total >= 100) return '#F5C518'
-    return '#A38A0A'
+    if(total >= 1000) return '#FFFFFF'  // higher band
+    if(total >= 100) return '#F5C518'   // medium band
+    return '#A38A0A'                    // lower band
 
 }
 
@@ -21,14 +21,17 @@ export default function PrizeTimeline({ results }: Props){
     const run = results.featuredRuns[runIndex]
 
     const chartData = run.months.map(snap => ({
-        month:  snap.month,
-        total:  snap.prizes.reduce((sum, p) => sum + p.amount, 0),
-        prizes: snap.prizes
+        month:          snap.month,
+        total:          snap.prizes.reduce((sum, p) => sum + p.amount, 0),
+        highestPrize:   snap.prizes.reduce((max, p) => Math.max(max, p.amount), 0), 
+        prizes:         snap.prizes
     }))
 
     const totalWon  = chartData.reduce((sum, d) => sum + d.total, 0)
     const winCount  = chartData.filter(d => d.total > 0).length
     const biggestWin = Math.max(...chartData.map(d => d.total), 0)
+    const totalDeposited = run.finalBalance - run.totalPrizesWon + run.totalCashPayout
+    const totalValue = run.finalBalance + run.totalCashPayout
 
     const yearTicks = chartData
         .filter(d => d.month % 12 === 11)
@@ -102,13 +105,62 @@ export default function PrizeTimeline({ results }: Props){
                         {chartData.map((d, i) => (
                             <Cell
                                 key={i}
-                                fill={d.total > 0 ? tierColor(d.total) : 'transparent'}
+                                fill={d.total > 0 ? tierColor(d.highestPrize) : 'transparent'}
                                 fillOpacity={d.total > 0 ? 0.85 : 0}
                             />
                         ))}
                     </Bar>
                 </BarChart>
             </ResponsiveContainer>
+            {/* Legend */}
+            <div className="flex gap-6 pt-1">
+                {[
+                    { color: '#FFFFFF', label: 'Higher band (£5,000+)' },
+                    { color: '#F5C518', label: 'Medium band (£500-£1,000)' },
+                    { color: '#A38A0A', label: 'Lower band (£25-£100)' }
+                ].map(({ color, label }) => (
+                    <div key={label} className="flex items-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: color }} />
+                        <span className="font-mono text-xs text-muted">{label}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* Total section */}
+            <div className="border-t border-border pt-4 space-y-3">
+                <p className="font-mono text-xs text-muted uppercase tracking-widest">
+                    Total
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                        {
+                            label: 'Total Deposited',
+                            value: fmtGBP(totalDeposited),
+                            color: 'text-text'
+                        },
+                        {
+                            label: 'Total Prizes Won',
+                            value: fmtGBP(run.totalPrizesWon),
+                            color: 'text-gold'
+                        },
+                        {
+                            label: 'Cash Payouts',
+                            value: run.totalCashPayout > 0 ? fmtGBP(run.totalCashPayout) : '-',
+                            color: 'text-green'
+                        },
+                        {
+                            label: 'Total Value',
+                            value: fmtGBP(totalValue),
+                            color: 'text-gold'
+                        }
+                    ].map(({ label, value, color}) => (
+                        <div key={label} className="bg-bg border border-border rounded-lg px-4 py-3">
+                            <p className="font-mono text-xs text-muted mb-1">{label}</p>
+                            <p className={`font-mono text-sm font-medium ${color}`}>{value}</p>
+                        </div>              
+                    ))}
+                </div>
+            </div>
         </div>
     )
 

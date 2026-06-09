@@ -2,6 +2,15 @@ import { useSimulation } from "./hooks/useSimulation"
 import type { SimulationConfig } from "./simulation/types"
 import ConfigPanel from './components/ConfigPanel.tsx'
 import ResultsDashboard from "./components/ResultsDashboard.tsx"
+import { useState } from "react"
+import RealPrizeTimeline from './components/RealPrizeTimeline.tsx'
+import PrizeDrawTable from "./components/PrizeDrawTable.tsx"
+
+export interface RealPrizeEvent {
+  id: string
+  month: number
+  amount: number
+}
 
 const DEFAULT_CONFIG: SimulationConfig = {
   initialDeposit: 1000,
@@ -16,6 +25,15 @@ const DEFAULT_CONFIG: SimulationConfig = {
 export default function App(){
 
   const { status, progress, results, run, cancel} = useSimulation()
+  const [realPrizes, setRealPrizes] = useState<RealPrizeEvent[]>([])
+
+  const addRealPrize = (month: number, amount: number) => {
+    setRealPrizes(prev => [...prev, { id: crypto.randomUUID(), month, amount}])
+  }
+
+  const removeRealPrize = (id: string) => {
+    setRealPrizes(prev => prev.filter(p => p.id !== id))
+  }
 
   return (
     <div className="min-h-screen bg-bg text-text">
@@ -56,6 +74,7 @@ export default function App(){
           onRun={run}
           onCancel={cancel}
         />
+        <PrizeDrawTable />
 
         {/* Progress bar */}
         {status === 'running' && (
@@ -88,6 +107,13 @@ export default function App(){
             Something went wrong. Check the console.
           </p>
         )}
+
+        <RealPrizeTimeline
+          prizes={realPrizes}
+          onAdd={addRealPrize}
+          onRemove={removeRealPrize}
+          results={results}
+        />
       </main>
     </div>
   )

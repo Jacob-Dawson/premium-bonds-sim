@@ -1,5 +1,6 @@
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, YAxis, ReferenceLine } from "recharts";
 import type { AggregatedResults } from "../simulation/types";
+import { fmtGBPk } from "../utils/format";
 
 interface Props {
     results: AggregatedResults
@@ -7,8 +8,15 @@ interface Props {
 
 function buildBuckets(values: number[], bucketCount = 40){
 
-    const min = Math.min(...values)
-    const max = Math.max(...values)
+    const min = values.reduce((a,b) => Math.min(a, b), Infinity)
+    const max = values.reduce((a, b) => Math.max(a, b), -Infinity)
+
+    if(min === max){
+
+        return [{ label: fmtGBPk(min), midpoint: min, count: values.length}]
+
+    }
+
     const step = (max - min) / bucketCount
 
     const buckets = Array.from({ length: bucketCount }, (_, i) => ({
@@ -23,7 +31,7 @@ function buildBuckets(values: number[], bucketCount = 40){
     }
 
     return buckets.map(b => ({
-        label: '£' + Math.round(b.from / 1000) + 'k',
+        label: fmtGBPk(b.from),
         midpoint: (b.from + b.to) / 2,
         count: b.count
     }))
