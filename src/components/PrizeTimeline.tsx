@@ -2,22 +2,29 @@ import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell} from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
 import { fmtGBP } from '../utils/format'
+import { tierColor, getYearTicks, TOOLTIP_STYLE } from '../utils/chart'
+import StatCard from './StatCard'
 
 interface Props {
     results: AggregatedResults
 }
 
-function tierColor(total: number): string {
-
-    if(total >= 5_000) return '#FFFFFF'  // higher band
-    if(total >= 500) return '#F5C518'   // medium band
-    return '#A38A0A'                    // lower band
-
-}
-
 export default function PrizeTimeline({ results }: Props){
 
     const [runIndex, setRunIndex] = useState(0)
+
+    if(results.featuredRuns.length === 0){
+
+        return (
+            <div className="bg-surface border border-border rounded-xl p-6">
+                <p className="font-mono text-xs text-muted">
+                    No detailed runs available. Try increasing the number of simulations above 10.
+                </p>
+            </div>
+        )
+
+    }
+
     const run = results.featuredRuns[runIndex]
 
     const chartData = run.months.map(snap => ({
@@ -33,9 +40,7 @@ export default function PrizeTimeline({ results }: Props){
     const totalDeposited = run.finalBalance - run.totalPrizesWon + run.totalCashPayout
     const totalValue = run.finalBalance + run.totalCashPayout
 
-    const yearTicks = chartData
-        .filter(d => d.month % 12 === 11)
-        .map(d => d.month)
+    const yearTicks = getYearTicks(chartData)
 
     return (
         <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
@@ -69,16 +74,9 @@ export default function PrizeTimeline({ results }: Props){
 
             {/* Summary stats for this run */}
             <div className="grid grid-cols-3 gap-3">
-                {[
-                    { label: 'Total Won',   value: fmtGBP(totalWon)},
-                    { label: 'Prize Count', value: String(winCount)},
-                    { label: 'Biggest Win', value: biggestWin > 0 ? fmtGBP(biggestWin) : '-'}
-                ].map(({ label, value }) => (
-                    <div key={label} className="bg-bg border  border-border rounded-lg px-4 py-3">
-                        <p className="font-mono text-xs text-muted mb-1">{label}</p>
-                        <p className="font-mono text-sm text-gold">{value}</p>
-                    </div>
-                ))}
+                <StatCard label="Total Won"     value={fmtGBP(totalWon)} />
+                <StatCard label="Prize Count"   value={String(winCount)} />
+                <StatCard label="Biggest Win"   value={biggestWin > 0 ? fmtGBP(biggestWin): '-'} />
             </div>
 
             {/* Chart */}
@@ -132,33 +130,10 @@ export default function PrizeTimeline({ results }: Props){
                     Total
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                        {
-                            label: 'Total Deposited',
-                            value: fmtGBP(totalDeposited),
-                            color: 'text-text'
-                        },
-                        {
-                            label: 'Total Prizes Won',
-                            value: fmtGBP(run.totalPrizesWon),
-                            color: 'text-gold'
-                        },
-                        {
-                            label: 'Cash Payouts',
-                            value: run.totalCashPayout > 0 ? fmtGBP(run.totalCashPayout) : '-',
-                            color: 'text-green'
-                        },
-                        {
-                            label: 'Total Value',
-                            value: fmtGBP(totalValue),
-                            color: 'text-gold'
-                        }
-                    ].map(({ label, value, color}) => (
-                        <div key={label} className="bg-bg border border-border rounded-lg px-4 py-3">
-                            <p className="font-mono text-xs text-muted mb-1">{label}</p>
-                            <p className={`font-mono text-sm font-medium ${color}`}>{value}</p>
-                        </div>              
-                    ))}
+                    <StatCard label="Total Deposited" value={fmtGBP(totalDeposited)} color="text-text" />
+                    <StatCard label="Total Prizes Won" value={fmtGBP(run.totalPrizesWon)} />
+                    <StatCard label="Cash Payouts" value={run.totalCashPayout > 0 ? fmtGBP(run.totalCashPayout) : '-'} color="text-green" />
+                    <StatCard label="Total Value" value={fmtGBP(totalValue)} />
                 </div>
             </div>
         </div>
@@ -186,9 +161,7 @@ function TimelineTooltip({ active, payload, label }: {
     }, {})
 
     return (
-        <div style={{
-            background: '#161D2B', border: '1px solid #1E2A3B', borderRadius: 8, padding: '10px 14px', fontFamily: 'IBM Plex Mono', fontSize: 11
-        }}>
+        <div style={TOOLTIP_STYLE}>
             <p style={{ color: '#94A3B8', marginBottom: 6}}>
                 Year {year}, Month {month}
             </p>

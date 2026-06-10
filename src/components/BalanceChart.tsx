@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
 import { fmtGBPk, fmtGBP } from '../utils/format'
+import { getYearTicks, TOOLTIP_STYLE } from '../utils/chart'
 
 interface Props {
     results: AggregatedResults
@@ -25,9 +26,7 @@ export default function BalanceChart({ results }: Props){
         comparison: results.comparisonBalanceByMonth[i]
     }))
 
-    const yearTicks = chartData
-        .filter(d => d.month % 12 === 11)
-        .map(d => d.month)
+    const yearTicks = getYearTicks(chartData)
 
     return (
         <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
@@ -94,14 +93,7 @@ function ChartTooltip({ active, payload, label, comparisonRate}: {
     const year = ((label + 1 ) / 12).toFixed(1)
 
     return (
-        <div style={{
-            background: '#161D2B',
-            border: '1px solid #1E2A3B',
-            borderRadius: 8,
-            padding: '10px 14px',
-            fontFamily: 'IBM Plex Mono',
-            fontSize: 11
-        }}>
+        <div style={TOOLTIP_STYLE}>
             <p style={{ color: '#94A3B8', marginBottom: 6}}>Year {year}</p>
             <p style={{ color: '#F5C518' }}>Median: {fmt(p50)}</p>
             <p style={{ color: '#94A3B8' }}>Range: {fmt(p10)} - {fmt(p90)}</p>

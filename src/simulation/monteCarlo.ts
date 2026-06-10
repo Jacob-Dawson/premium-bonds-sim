@@ -51,6 +51,12 @@ function computeEquivalentAnnualRate(
     durationMonths: number,
     targetBalance: number
 ): number {
+    // Guard: no real return above contribution alone
+    if(durationMonths <= 0) return 0
+
+    const baseBalance = initialDeposit + monthlyContribution * durationMonths
+    if(targetBalance <= baseBalance) return 0
+
     // Binary search for the monthly rate that produces targetBalance
     let low = 0
     let high = 1
@@ -81,6 +87,12 @@ export function runMonteCarlo(
     config: SimulationConfig,
     onProgress?: (percent: number) => void // add this
 ): AggregatedResults {
+
+    if(config.durationMonths <= 0 || config.numberOfRuns <= 0){
+
+        throw new Error('Invalid config: durationMonths and numberOfRuns must be positive')
+
+    }
 
     const allRuns: SimulationRun[] = [];
     const featuredRuns: DetailedSimulationRun[] = []

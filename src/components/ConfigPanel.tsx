@@ -19,6 +19,59 @@ interface FormState {
     numberOfRuns: string
 }
 
+interface FormErrors {
+    initialDeposit?: string
+    monthlyContribution?: string
+    durationYears?: string
+    annualPrizeRate?: string
+    comparisonInterestRate?: string
+    oddsPerBond?: string
+    numberOfRuns?: string
+}
+
+function validate(form: FormState): FormErrors{
+
+    const errors: FormErrors = {}
+
+    const initialDeposit = parseFloat(form.initialDeposit)
+    const monthlyContribution = parseFloat(form.monthlyContribution)
+    const durationYears = parseFloat(form.durationYears)
+    const annualPrizeRate = parseFloat(form.annualPrizeRate)
+    const comparisonInterestRate = parseFloat(form.comparisonInterestRate)
+    const oddsPerBond = parseFloat(form.oddsPerBond)
+    const numberOfRuns = parseFloat(form.numberOfRuns)
+
+    if(isNaN(initialDeposit) || initialDeposit < 0)
+        errors.initialDeposit = 'Must be £0 or more'
+    else if (initialDeposit > 50_000)
+        errors.initialDeposit = 'NS&I maximum is £50,000'
+
+    if(isNaN(monthlyContribution) || monthlyContribution < 0)
+        errors.monthlyContribution = 'Must be £0 or more'
+
+    if(isNaN(durationYears) || durationYears < 1)
+        errors.durationYears = 'Minimum 1 year'
+    else if(durationYears > 40)
+        errors.durationYears = 'Maximum 40 years'
+
+    if(isNaN(annualPrizeRate) || annualPrizeRate <= 0)
+        errors.annualPrizeRate = 'Must be greater than 0'
+
+    if(isNaN(comparisonInterestRate) || comparisonInterestRate < 0)
+        errors.comparisonInterestRate = 'Must be 0 or more'
+
+    if(isNaN(oddsPerBond) || oddsPerBond < 1)
+        errors.oddsPerBond = 'Must be at least 1'
+
+    if(isNaN(numberOfRuns) || numberOfRuns < 100)
+        errors.numberOfRuns = 'Minimum 100'
+    else if(numberOfRuns > 10_000)
+        errors.numberOfRuns = 'Maximum 10,000'
+
+    return errors
+
+}
+
 export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: Props){
 
     const [form, setForm] = useState<FormState>({
@@ -33,19 +86,23 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
 
     const isRunning = status === 'running'
 
+    const errors = validate(form)
+    const hasErrors = Object.keys(errors).length > 0
+
     const handleChange = (field: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm(prev => ({ ...prev, [field]: e.target.value}))
 
     const handleRun = () => {
+        if(hasErrors) return
         onRun({
             initialDeposit: parseFloat(form.initialDeposit) || 0,
             monthlyContribution: parseFloat(form.monthlyContribution) || 0,
             durationMonths: Math.round((parseFloat(form.durationYears) || 1) * 12),
             comparisonInterestRate: (parseFloat(form.comparisonInterestRate) || 0) / 100,
             annualPrizeRate: (parseFloat(form.annualPrizeRate) || 0) / 100,
-            oddsPerBond: parseInt(form.oddsPerBond) || 22000,
-            numberOfRuns: parseInt(form.numberOfRuns) || 1000
+            oddsPerBond: parseInt(form.oddsPerBond) || 22_000,
+            numberOfRuns: parseInt(form.numberOfRuns) || 1_000
         })
     }
 
@@ -58,15 +115,15 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
                     Your Investment
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Field label="Initial Deposit" prefix="£">
+                    <Field label="Initial Deposit" prefix="£" error={errors.initialDeposit}>
                         <input type="number"    className="input" min={25} max={50000} value={form.initialDeposit} onChange={handleChange('initialDeposit')} disabled={isRunning} />
                     </Field>
-                    <Field label="Monthly Contribution" prefix="£">
+                    <Field label="Monthly Contribution" prefix="£" error={errors.monthlyContribution}>
                         <input type="number" className="input" min={0} max={50000}
                         value={form.monthlyContribution} onChange={handleChange('monthlyContribution')}
                         disabled={isRunning} />
                     </Field>
-                    <Field label="Duration" suffix="years">
+                    <Field label="Duration" suffix="years" error={errors.durationYears}>
                         <input type="number" className="input" min={1} max={40}
                         value={form.durationYears} onChange={handleChange('durationYears')}
                         disabled={isRunning}/>
@@ -80,20 +137,20 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
                     Market Parameters
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Field label="Prize Rate" suffix="%">
+                    <Field label="Prize Rate" suffix="%" error={errors.annualPrizeRate}>
                         <input type="number" className="input" step={0.1}
                         value={form.annualPrizeRate} onChange={handleChange('annualPrizeRate')} disabled={isRunning} />
                     </Field>
-                    <Field label="Savings Rate" suffix="%">
+                    <Field label="Savings Rate" suffix="%" error={errors.comparisonInterestRate}>
                         <input type="number" className="input" step={0.1}
                         value={form.comparisonInterestRate} onChange={handleChange('comparisonInterestRate')} disabled={isRunning} />
                     </Field>
-                    <Field label="Bond Odds" prefix="1 in">
+                    <Field label="Bond Odds" prefix="1 in" error={errors.oddsPerBond}>
                         <input type="number" className="input"
                         value={form.oddsPerBond} onChange={handleChange('oddsPerBond')}
                         disabled={isRunning} />
                     </Field>
-                    <Field label="Simulations">
+                    <Field label="Simulations" error={errors.numberOfRuns}>
                         <input type="number" className="input" min={100} max={10000} step={100}
                         value={form.numberOfRuns} onChange={handleChange('numberOfRuns')}
                         disabled={isRunning} />
@@ -109,8 +166,12 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
                         Cancel
                     </button>
                 ) : (
-                    <button onClick={handleRun}
-                        className="bg-gold text-bg font-mono font-medium text-sm px-8 py-3 rounded-lg hover:brightness-110 transition-all cursor-pointer">
+                    <button onClick={handleRun} disabled={hasErrors}
+                        className={`font-mono font-medium text-sm px-8 py-3 rounded-lg transition-all ${
+                            hasErrors
+                                ? 'bg-border text-muted cursor-not-allowed'
+                                : 'bg-gold text-bg hover:brightness-110 cursor-pointer'
+                        }`}>
                         Run Simulation →
                     </button>
                 )}
@@ -119,10 +180,11 @@ export default function ConfigPanel({ defaultConfig, status, onRun, onCancel}: P
     )
 }
 
-function Field({label, prefix, suffix, children}: {
+function Field({label, prefix, suffix, error, children}: {
     label: string
     prefix?: string
     suffix?: string
+    error?: string
     children: React.ReactNode
 }) {
     return (
@@ -139,6 +201,9 @@ function Field({label, prefix, suffix, children}: {
                     <span className="font-mono text-xs text-muted pr-3 pl-1 select-none">{suffix}</span>
                 )}
             </div>
+            {error && (
+                <p className="font-mono text-xs text-red">{error}</p>
+            )}
         </div>
     )
 }

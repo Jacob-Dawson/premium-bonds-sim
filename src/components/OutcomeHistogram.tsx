@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, YAxis, ReferenceLine } from "recharts";
 import type { AggregatedResults } from "../simulation/types";
 import { fmtGBPk } from "../utils/format";
+import { TOOLTIP_STYLE } from "../utils/chart";
 
 interface Props {
     results: AggregatedResults
@@ -106,11 +107,7 @@ function HistTooltip({ active, payload, total }: {
     const pct = ((count / total) * 100).toFixed(1)
 
     return (
-        <div style={{
-            background: '#161D2B', border: '1px solid #1E2A3B',
-            borderRadius: 8, padding: '10px 14px',
-            fontFamily: 'IBM Plex Mono', fontSize: 11
-        }}>
+        <div style={TOOLTIP_STYLE}>
             <p style={{ color: '#94A3B8', marginBottom: 4 }}>{label}</p>
             <p style={{ color: '#F5C518' }}>{count} runs ({pct}%)</p>
         </div>

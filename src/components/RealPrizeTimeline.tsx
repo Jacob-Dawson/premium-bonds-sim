@@ -3,14 +3,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import type { AggregatedResults } from '../simulation/types'
 import type { RealPrizeEvent } from '../App'
 import { fmtGBP } from '../utils/format'
+import { tierColor, getYearTicks, TOOLTIP_STYLE } from '../utils/chart'
+import StatCard from './StatCard'
 
 const PRIZE_AMOUNTS = [25, 50, 100, 500, 1000, 5000, 10000, 25000, 50000, 100000, 1000000]
-
-function tierColor(amount: number): string {
-    if(amount >= 5_000) return '#FFFFFF'
-    if(amount >= 500) return '#F5C518'
-    return '#A38A0A'
-}
 
 interface Props {
     
@@ -45,9 +41,7 @@ export default function RealPrizeTimeline({ prizes, onAdd, onRemove, results }: 
         ]
     : null
 
-    const yearTicks = chartData
-        .filter(d => d.month % 12 === 11)
-        .map(d => d.month)
+    const yearTicks = getYearTicks(chartData)
 
     return (
         <div className="bg-surface border border-border rounded-xl p-6 space-y-6">
@@ -107,16 +101,9 @@ export default function RealPrizeTimeline({ prizes, onAdd, onRemove, results }: 
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3">
-                {[
-                    { label: 'Total Won',   value: prizes.length > 0 ? fmtGBP(totalWon) : '-' },
-                    { label: 'Prize Count', value: prizes.length > 0 ? String(prizes.length) : '-' },
-                    { label: 'Biggest Win', value: prizes.length > 0 ? fmtGBP(biggestWin) : '-' }
-                ].map(({ label, value }) => (
-                    <div key={label} className="bg-bg border border-border rounded-lg px-4 py-3">
-                        <p className="font-mono text-xs text-muted mb-1">{label}</p>
-                        <p className="font-mono text-sm text-gold">{value}</p>                    
-                    </div>
-                ))}
+                <StatCard label="Total Won"   value={prizes.length > 0 ? fmtGBP(totalWon)        : '—'} />
+                <StatCard label="Prize Count" value={prizes.length > 0 ? String(prizes.length)   : '—'} />
+                <StatCard label="Biggest Win" value={prizes.length > 0 ? fmtGBP(biggestWin)      : '—'} />
             </div>
 
             {/* Chart */}
@@ -182,16 +169,12 @@ export default function RealPrizeTimeline({ prizes, onAdd, onRemove, results }: 
                         vs Simulation
                     </p>
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-bg border border-border rounded-lg px-4 py-3">
-                            <p className="font-mono text-xs text-muted mb-1">Your Total</p>
-                            <p className="font-mono text-sm text-gold">{fmtGBP(totalWon)}</p>
-                        </div>
-                        <div className="bg-bg border border-border rounded-lg px-4 py-3">
-                            <p className="font-mono text-xs text-muted mb-1">Simulation Median</p>
-                            <p className={`font-mono text-sm ${totalWon >= simMedianTotal ? 'text-green' : 'text-red'}`}>
-                                {fmtGBP(simMedianTotal)}
-                            </p>
-                        </div>
+                        <StatCard label="Your Total" value={fmtGBP(totalWon)} />
+                        <StatCard
+                            label="Simulation Median"
+                            value={fmtGBP(simMedianTotal)}
+                            color={totalWon >= simMedianTotal ? 'text-green' : 'text-red'}
+                        />
                     </div>
                 </div>
             )}
@@ -210,9 +193,7 @@ function RealTooltip({ active, payload, label }: {
     if(total === 0) return null
 
     return (
-        <div style={{
-            background: '#161D2B', border: '1px solid #1E2A3B', borderRadius: 8, padding: '10px 14px', fontFamily: 'IBM Plex Mono', fontSize: 11
-        }}>
+        <div style={TOOLTIP_STYLE}>
             <p style={{ color: '#94A3B8', marginBottom: 6 }}>Month {(label as number) + 1}</p>
             {prizes.map(p => (
                 <p key={p.id} style={{ color: '#F5C518' }}>{fmtGBP(p.amount)}</p>

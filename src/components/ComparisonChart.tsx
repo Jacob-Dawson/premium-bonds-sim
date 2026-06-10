@@ -1,6 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine} from 'recharts'
 import type { AggregatedResults } from '../simulation/types'
 import { fmtDiff, fmtGBPk } from '../utils/format'
+import { getYearTicks, TOOLTIP_STYLE } from '../utils/chart'
 
 interface Props {
     results: AggregatedResults
@@ -20,9 +21,7 @@ export default function ComparisonChart({ results }: Props) {
     const zeroFrac  = maxVal / range
     const zeroPct   = `${Math.min(100, Math.max(0, zeroFrac * 100)).toFixed(1)}%`
 
-    const yearTicks = chartData
-        .filter(d => d.month % 12 === 11)
-        .map(d => d.month)
+    const yearTicks = getYearTicks(chartData)
 
     return (
         <div className="bg-surface border border-border rounded-xl p-6 space-y-4 h-full">
@@ -92,9 +91,7 @@ function CompTooltip({ active, payload, label, comparisonRate}: {
     const ahead = diff >= 0
 
     return (
-        <div style={{
-            background: '#161D2B', border: '1px solid #1E2A3B', borderRadius: 8, padding: '10px 14px', fontFamily: 'IBM Plex Mono', fontSize: 11
-        }}>
+        <div style={TOOLTIP_STYLE}>
             <p style={{ color: '#94A3B8', marginBottom: 4}}>Year {year}</p>
             <p style={{ color: ahead ? '#F5C518' : '#EF4444'}}>
                 {ahead ? 'PB ahead by' : 'Savings ahead by'} {fmtGBPk(Math.abs(diff))}

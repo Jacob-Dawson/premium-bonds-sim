@@ -21,6 +21,19 @@ export function runMonthlyDraw(
     balanceBeforeDraw: number,
     oddsPerBond: number
 ): MonthSnapshot {
+    // guard: no bonds in draw or invalid odds - return snapshot with no prizes
+    if(eligibleBonds <= 0 || oddsPerBond <= 0){
+
+        return {
+            month,
+            eligibleBonds,
+            balance: balanceBeforeDraw,
+            cashPayout: 0,
+            prizes: []
+        }
+
+    }
+
     const expectedWins = eligibleBonds / oddsPerBond;
     const numberOfWins = samplePoisson(expectedWins)
 
