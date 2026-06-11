@@ -96,16 +96,16 @@ src/
 ├── hooks/
 │   └── useSimulation.ts       # Worker lifecycle management
 ├── components/                # React UI components
-│   ├── BalanceChart.tsx
-│   ├── ComparisonChart.tsx
-│   ├── ConfigPanel.tsx
-│   ├── OutcomeHistogram.tsx
-│   ├── PrizeDrawTable.tsx
-│   ├── PrizeTimeline.tsx
-│   ├── RealPrizeTimeline.tsx
-│   ├── ResultsDashboard.tsx
-│   ├── StatCard.tsx
-│   └── StatsSummary.tsx
+│   ├── BalanceChart.tsx        # Balance Chart
+│   ├── ComparisonChart.tsx     # Comparison Chart
+│   ├── ConfigPanel.tsx         # Configuration Panel
+│   ├── OutcomeHistogram.tsx    # Histogram of outcomes
+│   ├── PrizeDrawTable.tsx      # Prize Draw Table
+│   ├── PrizeTimeline.tsx       # Prize Timeline
+│   ├── RealPrizeTimeline.tsx   # Your Prizes Timeline
+│   ├── ResultsDashboard.tsx    # Results Dashboard
+│   ├── StatCard.tsx            # Stats Card
+│   └── StatsSummary.tsx        # Summary of Stats
 ├── utils/
 │   ├── chart.ts    # Shared chart utilities
 │   └── format.ts   # Number formatting helpers

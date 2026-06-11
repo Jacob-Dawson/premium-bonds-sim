@@ -52,10 +52,7 @@ function computeEquivalentAnnualRate(
     targetBalance: number
 ): number {
     // Guard: no real return above contribution alone
-    if(durationMonths <= 0) return 0
-
-    const baseBalance = initialDeposit + monthlyContribution * durationMonths
-    if(targetBalance <= baseBalance) return 0
+    if (durationMonths <= 0 || targetBalance <= 0) return 0
 
     // Binary search for the monthly rate that produces targetBalance
     let low = 0
